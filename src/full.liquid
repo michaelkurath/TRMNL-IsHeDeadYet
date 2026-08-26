@@ -1,0 +1,20 @@
+<div class="layout layout--col gap content_area">
+  <div class="flex flex--col flex--left gap--8 md:gap--12">
+    <div class="value value--large md:value--xlarge lg:value--xxlarge" data-value-fit="true" data-value-fit-max-height="150">
+      <span>{{ headline | default: 'Unable to confirm.' }}</span>
+    </div>
+
+    <div class="value value--small md:value--base lg:value--large">
+      <span>{{ subheadline | default: 'Status check unavailable.' }}</span>
+    </div>
+
+    <div class="description lg:description--xlarge">
+      <span>{{ footer | default: 'No evidence available.' }}</span>
+    </div>
+  </div>
+</div>
+
+<div class="title_bar">
+  <span class="title">Is He Dead Yet?</span>
+  <span class="instance">{{ subject | default: 'Unknown' }}</span>
+</div>

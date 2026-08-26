@@ -1,0 +1,51 @@
+{% assign selected_person_key = trmnl.plugin_settings.custom_fields_values.person | default: 'donald_trump' %}
+{% assign selected_tone = trmnl.plugin_settings.custom_fields_values.tone | default: 'grim' %}
+
+{% case selected_person_key %}
+  {% when 'joe_biden' %}
+    {% assign selected_person = people.joe_biden %}
+  {% when 'barack_obama' %}
+    {% assign selected_person = people.barack_obama %}
+  {% when 'vladimir_putin' %}
+    {% assign selected_person = people.vladimir_putin %}
+  {% when 'xi_jinping' %}
+    {% assign selected_person = people.xi_jinping %}
+  {% when 'kim_jong_un' %}
+    {% assign selected_person = people.kim_jong_un %}
+  {% when 'elon_musk' %}
+    {% assign selected_person = people.elon_musk %}
+  {% when 'rupert_murdoch' %}
+    {% assign selected_person = people.rupert_murdoch %}
+  {% else %}
+    {% assign selected_person = people.donald_trump %}
+{% endcase %}
+
+{% if selected_person %}
+  {% assign subject = selected_person.subject %}
+  {% assign tone = selected_tone %}
+  {% assign status = selected_person.status %}
+  {% assign confidence = selected_person.confidence %}
+  {% assign evidence_count = selected_person.evidence_count %}
+  {% assign checked_at = selected_person.checked_at %}
+  {% assign headline = selected_person.headline %}
+  {% assign subheadline = selected_person.subheadline %}
+  {% assign footer = selected_person.footer %}
+  {% assign evidence = selected_person.evidence %}
+{% endif %}
+
+{% if selected_tone == 'neutral' %}
+  {% case status %}
+    {% when 'dead' %}
+      {% assign headline = 'Confirmed deceased' %}
+      {% assign subheadline = 'A public date-of-death signal was found.' %}
+      {% assign footer = 'Status based on public Wikidata and Wikipedia signals.' %}
+    {% when 'alive' %}
+      {% assign headline = 'No death record found' %}
+      {% assign subheadline = 'Public sources currently indicate no confirmed death.' %}
+      {% assign footer = 'Status based on public Wikidata and Wikipedia signals.' %}
+    {% else %}
+      {% assign headline = 'Unable to confirm' %}
+      {% assign subheadline = 'The public status check did not return a reliable result.' %}
+      {% assign footer = 'Try again after the next refresh.' %}
+  {% endcase %}
+{% endif %}
