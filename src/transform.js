@@ -1,103 +1,77 @@
-async function run(input) {
+function run(input) {
   const TONE = "grim";
   const people = {
-    donald_trump: { subject: "Donald Trump", entityId: "Q22686", wikiTitle: "Donald_Trump" },
-    joe_biden: { subject: "Joe Biden", entityId: "Q6279", wikiTitle: "Joe_Biden" },
-    barack_obama: { subject: "Barack Obama", entityId: "Q76", wikiTitle: "Barack_Obama" },
-    vladimir_putin: { subject: "Vladimir Putin", entityId: "Q7747", wikiTitle: "Vladimir_Putin" },
-    xi_jinping: { subject: "Xi Jinping", entityId: "Q15031", wikiTitle: "Xi_Jinping" },
-    kim_jong_un: { subject: "Kim Jong Un", entityId: "Q42313", wikiTitle: "Kim_Jong_Un" },
-    elon_musk: { subject: "Elon Musk", entityId: "Q317521", wikiTitle: "Elon_Musk" },
-    rupert_murdoch: { subject: "Rupert Murdoch", entityId: "Q53950", wikiTitle: "Rupert_Murdoch" }
+    donald_trump: { subject: "Donald Trump", entityId: "Q22686" },
+    joe_biden: { subject: "Joe Biden", entityId: "Q6279" },
+    barack_obama: { subject: "Barack Obama", entityId: "Q76" },
+    vladimir_putin: { subject: "Vladimir Putin", entityId: "Q7747" },
+    xi_jinping: { subject: "Xi Jinping", entityId: "Q15031" },
+    kim_jong_un: { subject: "Kim Jong Un", entityId: "Q42313" },
+    elon_musk: { subject: "Elon Musk", entityId: "Q317521" },
+    rupert_murdoch: { subject: "Rupert Murdoch", entityId: "Q53950" }
   };
 
   function checkedAt() {
     return new Date().toISOString();
   }
 
-  async function fetchJson(url) {
-    const response = await fetch(url, {
-      headers: {
-        accept: "application/json",
-        "user-agent": "TRMNL Is He Dead Yet status checker"
-      }
-    });
+  function payload(value) {
+    if (value && value.entities) return value;
+    if (value && value.data && value.data.entities) return value.data;
+    if (value && value.response && value.response.entities) return value.response;
 
-    if (!response.ok) {
-      throw new Error(`${url} returned ${response.status}`);
+    if (Array.isArray(value)) {
+      for (const item of value) {
+        const found = payload(item);
+        if (found) return found;
+      }
     }
 
-    return response.json();
+    return null;
+  }
+
+  function deathDate(entity) {
+    const claims = entity && entity.claims && Array.isArray(entity.claims.P570)
+      ? entity.claims.P570
+      : [];
+
+    const claim = claims.find((item) => (
+      item &&
+      item.rank !== "deprecated" &&
+      item.mainsnak &&
+      item.mainsnak.snaktype === "value" &&
+      item.mainsnak.datavalue &&
+      item.mainsnak.datavalue.value &&
+      item.mainsnak.datavalue.value.time
+    ));
+
+    if (!claim) return null;
+
+    const raw = claim.mainsnak.datavalue.value.time;
+    const match = raw.match(/[+-]?(\\d{4,})-(\\d{2})-(\\d{2})/);
+    return match ? `${match[1]}-${match[2]}-${match[3]}` : raw;
   }
 
   function lineSet() {
     const grimLines = [
-      ["Still alive.", "Death remains annoyingly behind schedule.", "No qualifying death signals found."],
-      ["Breathing, apparently.", "The reaper appears stuck in administrative review.", "No credible death confirmation detected."],
-      ["Not dead yet.", "Public records continue to disappoint the impatient.", "Living-person signals still outweigh the rest."],
+      ["Still alive.", "Death remains annoyingly behind schedule.", "No date-of-death claim found in Wikidata."],
+      ["Breathing, apparently.", "The reaper appears stuck in administrative review.", "No public death record detected."],
+      ["Not dead yet.", "Public records continue to disappoint the impatient.", "Wikidata has not filed a date of death."],
       ["Vitals remain inconvenient.", "The official paperwork refuses to cooperate.", "Public death markers remain absent."],
       ["Still among us.", "Mortality has not filed the update.", "No date-of-death claim is present."],
-      ["No obituary yet.", "The long goodbye is taking its time.", "Wikidata and Wikipedia still lean alive."],
+      ["No obituary yet.", "The long goodbye is taking its time.", "Wikidata still has no death record."],
       ["Alive, regrettably.", "The final notice has not arrived.", "Status check found no fatal paperwork."],
-      ["The records say alive.", "Not even Wikidata will call it.", "The public record remains stubbornly alive."],
+      ["The records say alive.", "Not even Wikidata will call it.", "The public record remains stubbornly unchanged."],
       ["Death clock still idle.", "The grave can keep waiting.", "No confirmed death signal surfaced."],
-      ["No curtain call.", "The exit paperwork remains unsigned.", "Living-person evidence still wins."],
-      ["Still dodging the headline.", "The end has not made it into the database.", "No public source has closed the file."],
+      ["No curtain call.", "The exit paperwork remains unsigned.", "No Wikidata death date was found."],
+      ["Still dodging the headline.", "The end has not made it into the database.", "The public record has not closed the file."],
       ["Not in the ground yet.", "The records remain painfully alive.", "Death confirmation remains missing."]
     ];
 
     return grimLines[Math.floor(Date.now() / 3600000) % grimLines.length];
   }
 
-  function buildStatus(person, deathDate, extraEvidence) {
-    const evidence = [];
-
-    if (deathDate) {
-      evidence.push({ source: "wikidata-p570", detail: `Date of death present: ${deathDate}` });
-    } else {
-      evidence.push({ source: "wikidata-p570", detail: "No date of death claim present" });
-    }
-
-    (extraEvidence || []).forEach((item) => evidence.push(item));
-
-    const hasDeathCategory = evidence.some((item) => /death-related category detected/i.test(item.detail || ""));
-    const hasLivingSignal = evidence.some((item) => /living people|living biography/i.test(item.detail || ""));
-    const isDead = Boolean(deathDate || hasDeathCategory);
-    const status = isDead ? "dead" : "alive";
-    const confidence = deathDate ? "high" : (hasLivingSignal ? "high" : "medium");
-
-    if (isDead) {
-      return {
-        subject: person.subject,
-        tone: TONE,
-        status,
-        confidence,
-        evidence_count: evidence.length,
-        checked_at: checkedAt(),
-        headline: "Confirmed dead.",
-        subheadline: "The paperwork finally made it through.",
-        footer: "Death signal detected from public reference data.",
-        evidence
-      };
-    }
-
-    const selected = lineSet();
-
-    return {
-      subject: person.subject,
-      tone: TONE,
-      status,
-      confidence,
-      evidence_count: evidence.length,
-      checked_at: checkedAt(),
-      headline: selected[0],
-      subheadline: selected[1],
-      footer: selected[2],
-      evidence
-    };
-  }
-
-  function fallback(person, reason) {
+  function unknown(person, reason) {
     return {
       subject: person.subject,
       tone: TONE,
@@ -108,88 +82,55 @@ async function run(input) {
       headline: "Unable to confirm.",
       subheadline: "The paperwork is missing from the desk.",
       footer: "Status check failed; keeping this conservative.",
-      evidence: [{ source: "serverless-transform", detail: reason }]
+      evidence: [{ source: "wikidata-p570", detail: reason }]
     };
   }
 
-  async function fetchDeathDates() {
-    const ids = Object.values(people).map((person) => `wd:${person.entityId}`).join(" ");
-    const query = `SELECT ?person ?dod WHERE { VALUES ?person { ${ids} } OPTIONAL { ?person wdt:P570 ?dod. } }`;
-    const url = `https://query.wikidata.org/sparql?format=json&query=${encodeURIComponent(query)}`;
-    const data = await fetchJson(url);
-    const dates = {};
+  function buildStatus(person, entity) {
+    if (!entity || entity.missing !== undefined) {
+      return unknown(person, "Wikidata entity data was not returned");
+    }
 
-    ((data.results && data.results.bindings) || []).forEach((row) => {
-      if (!row.person || !row.person.value || !row.dod || !row.dod.value) return;
-      const entityId = row.person.value.split("/").pop();
-      dates[entityId] = row.dod.value;
-    });
+    const date = deathDate(entity);
+    if (date) {
+      return {
+        subject: person.subject,
+        tone: TONE,
+        status: "dead",
+        confidence: "high",
+        evidence_count: 1,
+        checked_at: checkedAt(),
+        headline: "Confirmed dead.",
+        subheadline: "The paperwork finally made it through.",
+        footer: `Wikidata date of death: ${date}`,
+        evidence: [{ source: "wikidata-p570", detail: `Date of death present: ${date}` }]
+      };
+    }
 
-    return dates;
+    const selected = lineSet();
+    return {
+      subject: person.subject,
+      tone: TONE,
+      status: "alive",
+      confidence: "medium",
+      evidence_count: 1,
+      checked_at: checkedAt(),
+      headline: selected[0],
+      subheadline: selected[1],
+      footer: selected[2],
+      evidence: [{ source: "wikidata-p570", detail: "No date of death claim present" }]
+    };
   }
 
-  async function fetchExtraEvidence(person) {
-    const summaryUrl = `https://en.wikipedia.org/api/rest_v1/page/summary/${person.wikiTitle}`;
-    const categoriesUrl = `https://en.wikipedia.org/w/api.php?action=query&prop=categories&titles=${person.wikiTitle}&cllimit=max&format=json&origin=*`;
-    const [summaryResult, categoriesResult] = await Promise.allSettled([
-      fetchJson(summaryUrl),
-      fetchJson(categoriesUrl)
-    ]);
-
-    const summary = summaryResult.status === "fulfilled" ? summaryResult.value : null;
-    const pages = categoriesResult.status === "fulfilled" && categoriesResult.value && categoriesResult.value.query
-      ? categoriesResult.value.query.pages || {}
-      : {};
-    const categories = Object.keys(pages).flatMap((pageId) => pages[pageId].categories || []);
-    const categoryTitles = categories.map((category) => category.title || "");
-    const summaryText = `${summary && summary.description ? summary.description : ""} ${summary && summary.extract ? summary.extract : ""}`.trim();
-    const extraEvidence = [];
-
-    if (categoryTitles.includes("Category:Living people")) {
-      extraEvidence.push({ source: "wikipedia-categories", detail: "Category: Living people present" });
-    }
-
-    if (categoryTitles.some((title) => /deaths|burials|assassinated|murdered/i.test(title))) {
-      extraEvidence.push({ source: "wikipedia-categories", detail: "Death-related category detected" });
-    }
-
-    if (/\bis\b|current|serves|serving|president|businessman|politician/i.test(summaryText) && !/\bwas\b|died|death|late/i.test(summaryText)) {
-      extraEvidence.push({ source: "wikipedia-summary", detail: "Summary wording suggests living biography" });
-    }
-
-    if (summaryResult.status === "rejected") {
-      extraEvidence.push({ source: "wikipedia-summary", detail: summaryResult.reason.message });
-    }
-
-    if (categoriesResult.status === "rejected") {
-      extraEvidence.push({ source: "wikipedia-categories", detail: categoriesResult.reason.message });
-    }
-
-    return extraEvidence;
-  }
-
-  let deathDates = {};
-  try {
-    deathDates = await fetchDeathDates();
-  } catch (error) {
-    deathDates = {};
-  }
-
-  const entries = await Promise.all(
-    Object.keys(people).map(async (key) => {
-      const person = people[key];
-      try {
-        const extraEvidence = await fetchExtraEvidence(person);
-        return [key, buildStatus(person, deathDates[person.entityId], extraEvidence)];
-      } catch (error) {
-        return [key, fallback(person, error && error.message ? error.message : "unknown serverless error")];
-      }
-    })
-  );
-
+  const source = payload(input);
   const statuses = {};
-  entries.forEach(([key, status]) => {
-    statuses[key] = status;
+
+  Object.keys(people).forEach((key) => {
+    const person = people[key];
+    const entity = source && source.entities ? source.entities[person.entityId] : null;
+    statuses[key] = source
+      ? buildStatus(person, entity)
+      : unknown(person, "Wikidata polling payload was unavailable");
   });
 
   return {

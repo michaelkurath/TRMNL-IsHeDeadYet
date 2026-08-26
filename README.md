@@ -10,7 +10,7 @@ ePaper display.
 
 - lets you choose from several well-known public figures
 - checks Wikidata for a date-of-death claim
-- cross-checks Wikipedia categories and biography wording
+- evaluates the returned record locally without additional network requests
 - shows an alive, dead, or unknown result with a confidence indicator
 - rotates darkly humorous status lines when no death record is found
 - supports full-screen, half-horizontal, half-vertical, and quadrant layouts
@@ -21,13 +21,12 @@ reliably, it reports the status as unknown instead of guessing.
 ## Data sources and disclaimer
 
 Status signals come from public data on
-[Wikidata](https://www.wikidata.org/) and
-[Wikipedia](https://www.wikipedia.org/). These sources can be delayed,
-incomplete, or incorrect. This plugin is a novelty display, not an authoritative
+[Wikidata](https://www.wikidata.org/). This source can be delayed, incomplete,
+or incorrect. This plugin is a novelty display, not an authoritative
 source for breaking news or official confirmation.
 
 This repository is an independent community project and is not affiliated with
-or endorsed by the people listed, Wikimedia, Wikipedia, Wikidata, or TRMNL.
+or endorsed by the people listed, Wikimedia, Wikidata, or TRMNL.
 
 ## TRMNL recipe
 

@@ -1,4 +1,4 @@
-{% assign selected_person_key = trmnl.plugin_settings.custom_fields_values.person | default: 'donald_trump' %}
+{% assign selected_person_key = trmnl.plugin_settings.custom_fields_values.person | default: 'donald_trump' | downcase | replace: ' ', '_' %}
 {% assign selected_tone = trmnl.plugin_settings.custom_fields_values.tone | default: 'grim' %}
 
 {% case selected_person_key %}

@@ -6,7 +6,7 @@ static_data: ''
 polling_verb: get
 framework_version: 3.1.1
 serverless_language: node
-polling_url: https://www.wikidata.org/w/api.php?action=wbgetclaims&entity=Q22686&property=P570&format=json
+polling_url: https://www.wikidata.org/w/api.php?action=wbgetentities&ids=Q22686%7CQ6279%7CQ76%7CQ7747%7CQ15031%7CQ42313%7CQ317521%7CQ53950&props=claims&format=json
 polling_headers: ''
 polling_body: ''
 id: 316259
@@ -34,7 +34,7 @@ custom_fields:
 - keyname: author_bio
   field_type: author_bio
   name: About This Plugin
-  description: Checks public Wikidata and Wikipedia death-status signals for selected public figures, with dark humor. Source code and documentation are available on <a href="https://github.com/michaelkurath/TRMNL-IsHeDeadYet" target="_blank" rel="noopener">GitHub</a>.
+  description: Checks public Wikidata death-status records for selected public figures, with dark humor. Source code and documentation are available on <a href="https://github.com/michaelkurath/TRMNL-IsHeDeadYet" target="_blank" rel="noopener">GitHub</a>.
   email_address: michael.kurath@gmail.com
   learn_more_url: https://github.com/michaelkurath/TRMNL-IsHeDeadYet
   category: news,morbid
