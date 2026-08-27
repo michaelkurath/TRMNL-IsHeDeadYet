@@ -1,0 +1,70 @@
+name: Update Wikidata cache
+
+on:
+  schedule:
+    - cron: "17 * * * *"
+  workflow_dispatch:
+  push:
+    paths:
+      - ".github/workflows/update-wikidata.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: wikidata-cache
+  cancel-in-progress: false
+
+jobs:
+  update-cache:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Fetch and compact Wikidata response
+        shell: bash
+        env:
+          WIKIDATA_URL: >-
+            https://www.wikidata.org/w/api.php?action=wbgetentities&ids=Q22686%7CQ6279%7CQ76%7CQ7747%7CQ15031%7CQ42313%7CQ317521%7CQ53950&props=claims&format=json&maxage=3600&smaxage=3600
+        run: |
+          set -euo pipefail
+
+          curl             --fail             --silent             --show-error             --location             --retry 3             --retry-delay 20             --retry-all-errors             --user-agent "TRMNL-IsHeDeadYet/1.0 (https://github.com/michaelkurath/TRMNL-IsHeDeadYet; michael.kurath@gmail.com)"             "$WIKIDATA_URL"             --output /tmp/wikidata-response.json
+
+          jq -e '.entities | type == "object"' /tmp/wikidata-response.json >/dev/null
+          mkdir -p data
+
+          jq -S --arg checked_week "$(date -u +%G-W%V)" '
+            {
+              checked_week: $checked_week,
+              entities: (
+                .entities
+                | with_entries(
+                    .value = (
+                      if .value.missing != null
+                      then {missing: true}
+                      else {claims: {P570: (.value.claims.P570 // [])}}
+                      end
+                    )
+                  )
+              )
+            }
+          ' /tmp/wikidata-response.json > data/wikidata.json
+
+      - name: Commit changed cache
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          git add data/wikidata.json
+          if git diff --cached --quiet; then
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Update Wikidata cache"
+          git push
