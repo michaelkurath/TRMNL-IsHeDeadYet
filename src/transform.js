@@ -65,7 +65,25 @@ function run(input) {
       ["Death clock still idle.", "The grave can keep waiting.", "No confirmed death signal surfaced."],
       ["No curtain call.", "The exit paperwork remains unsigned.", "No Wikidata death date was found."],
       ["Still dodging the headline.", "The end has not made it into the database.", "The public record has not closed the file."],
-      ["Not in the ground yet.", "The records remain painfully alive.", "Death confirmation remains missing."]
+      ["Not in the ground yet.", "The records remain painfully alive.", "Death confirmation remains missing."],
+      ["Still ruining the suspense.", "The anticipated plot twist has been postponed.", "No public date-of-death claim was found."],
+      ["Alive and kicking.", "Mostly at the patience of everyone watching.", "Wikidata reports no fatal update."],
+      ["The bell has not tolled.", "Apparently it lost the address.", "No confirmed death marker is present."],
+      ["Still on this side.", "The other side has not accepted the booking.", "Public records show no date of death."],
+      ["The reaper missed again.", "Scheduling remains an issue in the afterlife.", "No Wikidata death claim was detected."],
+      ["No final checkout.", "The room remains inconveniently occupied.", "The public record is still open."],
+      ["Still consuming oxygen.", "The supply chain remains uninterrupted.", "No confirmed death signal was found."],
+      ["The coffin remains empty.", "Its reservation has not been confirmed.", "Wikidata lists no date of death."],
+      ["Still evading eternity.", "The deadline has slipped once more.", "No public death record is available."],
+      ["Alive by database standards.", "Reality has filed no contradictory paperwork.", "No date-of-death claim is recorded."],
+      ["No meeting with the maker.", "The appointment appears to have been rescheduled.", "Public death markers remain absent."],
+      ["Still above ground.", "Gravity has yet to finish the job.", "Wikidata has no confirmed death date."],
+      ["The obituary can wait.", "Its editor has nothing official to print.", "No public date-of-death signal surfaced."],
+      ["Still in circulation.", "The recall notice has not been issued.", "No confirmed death record was found."],
+      ["The end credits can wait.", "This episode keeps getting renewed.", "Wikidata still shows no death claim."],
+      ["No skeletal promotion yet.", "Management has delayed the transfer indefinitely.", "The public record remains unchanged."],
+      ["Still haunting the living.", "Without the courtesy of becoming a ghost first.", "No date-of-death claim is present."],
+      ["The exit remains closed.", "Someone misplaced the final key.", "No confirmed fatal update was detected."]
     ];
 
     return grimLines[Math.floor(Date.now() / 3600000) % grimLines.length];
