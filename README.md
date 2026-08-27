@@ -9,8 +9,9 @@ ePaper display.
 ## What it does
 
 - lets you choose from several well-known public figures
-- checks Wikidata for a date-of-death claim
-- evaluates the returned record locally without additional network requests
+- reads a compact, repository-hosted cache of Wikidata date-of-death claims
+- refreshes that cache hourly through GitHub Actions
+- evaluates the cached record locally without additional network requests
 - shows an alive, dead, or unknown result with a confidence indicator
 - rotates darkly humorous status lines when no death record is found
 - supports full-screen, half-horizontal, half-vertical, and quadrant layouts
@@ -21,7 +22,10 @@ reliably, it reports the status as unknown instead of guessing.
 ## Data sources and disclaimer
 
 Status signals come from public data on
-[Wikidata](https://www.wikidata.org/). This source can be delayed, incomplete,
+[Wikidata](https://www.wikidata.org/) and are cached in this repository by the
+[`Update Wikidata cache`](.github/workflows/update-wikidata.yml) workflow. TRMNL
+reads the cached JSON instead of querying Wikidata directly. If an update fails,
+the last valid cache remains available. Wikidata can still be delayed, incomplete,
 or incorrect. This plugin is a novelty display, not an authoritative
 source for breaking news or official confirmation.
 
