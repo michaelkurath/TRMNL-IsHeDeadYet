@@ -6,8 +6,8 @@ static_data: ''
 polling_verb: get
 framework_version: 3.1.1
 serverless_language: node
-polling_url: https://www.wikidata.org/w/api.php?action=wbgetentities&ids=Q22686%7CQ6279%7CQ76%7CQ7747%7CQ15031%7CQ42313%7CQ317521%7CQ53950&props=claims&format=json&maxage=3600&smaxage=3600
-polling_headers: User-Agent=TRMNL-IsHeDeadYet/1.0 (https://github.com/michaelkurath/TRMNL-IsHeDeadYet; michael.kurath@gmail.com)&Accept=application/json
+polling_url: https://raw.githubusercontent.com/michaelkurath/TRMNL-IsHeDeadYet/main/data/wikidata.json
+polling_headers: 'Accept=application/json'
 polling_body: ''
 id: 316259
 oauth_enabled: 'false'
