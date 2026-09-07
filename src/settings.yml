@@ -52,6 +52,7 @@ custom_fields:
   - Kim Jong Un
   - Elon Musk
   - Rupert Murdoch
+  - Mitch McConnell
 - keyname: tone
   field_type: select
   name: Tone

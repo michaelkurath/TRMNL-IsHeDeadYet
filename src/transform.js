@@ -8,7 +8,8 @@ function run(input) {
     xi_jinping: { subject: "Xi Jinping", entityId: "Q15031" },
     kim_jong_un: { subject: "Kim Jong Un", entityId: "Q42313" },
     elon_musk: { subject: "Elon Musk", entityId: "Q317521" },
-    rupert_murdoch: { subject: "Rupert Murdoch", entityId: "Q53950" }
+    rupert_murdoch: { subject: "Rupert Murdoch", entityId: "Q53950" },
+    mitch_mcconnell: { subject: "Mitch McConnell", entityId: "Q355522" }
   };
 
   const aliveLines = {
