@@ -1,6 +1,6 @@
 <div class="layout layout--col">
   <div class="outline rounded w--full h--full flex flex--col">
-    <div class="flex flex--row flex--between flex--center-y gap--1 p--2 lg:p--3 {{ header_tone_class }}">
+    <div class="w--full flex flex--row flex--between flex--center-y gap--1 p--2 lg:p--3 {{ header_tone_class }}">
       <span class="font--small font--bold {{ header_tone_class }}">{{ department }}</span>
       <span class="font--small font--bold {{ header_tone_class }}">{{ tone_label }}</span>
     </div>
@@ -8,7 +8,7 @@
 
     <div class="flex flex--col flex--center-y gap--2 lg:gap--4 grow p--3 lg:p--5">
       <span class="label label--outline label--xsmall lg:label--small">{{ case_state }}</span>
-      <div class="value value--large lg:value--xxlarge" data-value-fit="true" data-value-fit-max-height="142">
+      <div class="w--full value value--large lg:value--xxlarge" data-value-fit="true" data-value-fit-max-height="142">
         <span>{{ headline | default: 'Unable to confirm.' }}</span>
       </div>
       <div class="description description--small lg:description--xlarge">
