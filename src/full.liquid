@@ -1,35 +1,38 @@
 <div class="layout layout--col">
-  <div class="mortality-card mortality-card--{{ selected_tone }} mortality-card--{{ status }} mortality-card--full">
-    <div class="mortality-card__header">
-      <span class="mortality-card__department">{{ department }}</span>
-      <span>{{ tone_label }}</span>
+  <div class="outline rounded w--full h--full flex flex--col">
+    <div class="flex flex--row flex--between flex--center-y gap--2 p--3 lg:p--4 {{ header_tone_class }}">
+      <span class="font--small lg:font--base font--bold {{ header_tone_class }}">{{ department }}</span>
+      <span class="font--small lg:font--base font--bold {{ header_tone_class }}">{{ tone_label }}</span>
     </div>
+    <div class="divider"></div>
 
-    <div class="mortality-card__body">
-      <span class="mortality-card__stamp">{{ case_state }}</span>
-      <div class="value value--xxlarge lg:value--mega mortality-card__headline" data-value-fit="true" data-value-fit-max-height="150">
+    <div class="flex flex--col flex--center-y gap--3 lg:gap--5 grow p--4 lg:p--6">
+      <span class="label label--outline label--small lg:label--base">{{ case_state }}</span>
+      <div class="value value--xxlarge lg:value--mega" data-value-fit="true" data-value-fit-max-height="150">
         <span>{{ headline | default: 'Unable to confirm.' }}</span>
       </div>
-      <div class="description description--large lg:description--xxlarge mortality-card__subheadline">
+      <div class="description description--large lg:description--xxlarge">
         <span>{{ subheadline | default: 'Status check unavailable.' }}</span>
       </div>
-      <div class="mortality-card__evidence">
+      <div class="divider"></div>
+      <div class="description description--small lg:description--large font--bold">
         <span>{{ footer | default: 'No evidence available.' }}</span>
       </div>
     </div>
 
-    <div class="mortality-card__meta">
-      <div class="mortality-card__meta-item">
-        <span class="mortality-card__meta-label">MORTALITY FILE</span>
-        <span class="mortality-card__meta-value">{{ status_label }}</span>
+    <div class="divider"></div>
+    <div class="grid grid--cols-3">
+      <div class="p--3 lg:p--4">
+        <span class="label label--small">MORTALITY FILE</span>
+        <span class="description description--small lg:description--base font--bold">{{ status_label }}</span>
       </div>
-      <div class="mortality-card__meta-item">
-        <span class="mortality-card__meta-label">OBITUARY</span>
-        <span class="mortality-card__meta-value">{{ obituary_state }}</span>
+      <div class="border--v-black p--3 lg:p--4">
+        <span class="label label--small">OBITUARY</span>
+        <span class="description description--small lg:description--base font--bold">{{ obituary_state }}</span>
       </div>
-      <div class="mortality-card__meta-item">
-        <span class="mortality-card__meta-label">COFFIN</span>
-        <span class="mortality-card__meta-value">{{ coffin_state }}</span>
+      <div class="border--v-black p--3 lg:p--4">
+        <span class="label label--small">COFFIN</span>
+        <span class="description description--small lg:description--base font--bold">{{ coffin_state }}</span>
       </div>
     </div>
   </div>
