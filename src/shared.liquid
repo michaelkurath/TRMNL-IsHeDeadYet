@@ -64,11 +64,11 @@
   {% when 'alive' %}
     {% assign case_state = 'CASE OPEN' %}
     {% if selected_tone == 'pitch_black' %}
-      {% assign status_label = 'REAPER STATUS · DELAYED' %}
+      {% assign status_label = 'REAPER · DELAYED' %}
     {% elsif selected_tone == 'grim' %}
-      {% assign status_label = 'DEATH STATUS · PENDING' %}
+      {% assign status_label = 'DEATH · PENDING' %}
     {% else %}
-      {% assign status_label = 'PUBLIC STATUS · LIVING' %}
+      {% assign status_label = 'STATUS · LIVING' %}
     {% endif %}
     {% assign obituary_state = 'PENDING' %}
     {% assign coffin_state = 'UNASSIGNED' %}
