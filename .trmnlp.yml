@@ -1,0 +1,12 @@
+---
+watch:
+  - .trmnlp.yml
+  - src
+custom_fields:
+  person: donald_trump
+  tone: pitch_black
+transform_runtime: enabled
+variables:
+  trmnl:
+    plugin_settings:
+      instance_name: Is He Dead Yet?
