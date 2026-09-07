@@ -36,6 +36,9 @@ jobs:
           docker run --rm -v "$PWD:/plugin" trmnl/trmnlp:latest build --png --width 1040 --height 780 --color-depth 4
           mv _build _build-x
 
+      - name: Make previews readable by artifact uploader
+        run: sudo chown -R "$USER:$USER" _build-og _build-x
+
       - name: Upload rendered views
         uses: actions/upload-artifact@v4
         with:
