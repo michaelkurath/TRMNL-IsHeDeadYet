@@ -1,17 +1,24 @@
-<div class="layout layout--col gap--small content_area">
-  <div class="value value--large" data-value-fit="true" data-value-fit-max-height="120">
-    <span>{{ headline | default: 'Unable to confirm.' }}</span>
-  </div>
-  <div class="hidden lg:visible description--large">
-    <span>{{ subheadline | default: 'Status check unavailable.' }}</span>
-  </div>
-    <div class="hidden lg:visible lg:description">
-      <span>{{ footer | default: 'No evidence available.' }}</span>
+<div class="layout layout--col">
+  <div class="mortality-card mortality-card--{{ selected_tone }} mortality-card--{{ status }} mortality-card--quadrant">
+    <div class="mortality-card__header">
+      <span class="mortality-card__department">{{ department }}</span>
+      <span>{{ tone_label }}</span>
     </div>
 
+    <div class="mortality-card__body">
+      <span class="mortality-card__stamp">{{ case_state }}</span>
+      <div class="value value--large lg:value--xlarge mortality-card__headline" data-value-fit="true" data-value-fit-max-height="108">
+        <span>{{ headline | default: 'Unable to confirm.' }}</span>
+      </div>
+      <div class="description description--small lg:description--large mortality-card__subheadline">
+        <span>{{ subheadline | default: 'Status check unavailable.' }}</span>
+      </div>
+    </div>
+  </div>
 </div>
 
 <div class="title_bar">
+  <img class="image image-stroke" alt="" src="data:image/svg+xml;base64,{{ mortality_icon | base64_encode }}">
   <span class="title">Is He Dead Yet?</span>
   <span class="instance">{{ subject | default: 'Unknown' }}</span>
 </div>
