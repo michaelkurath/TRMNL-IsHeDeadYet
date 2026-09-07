@@ -1,0 +1,47 @@
+name: TRMNL preview
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - codex/darker-case-file
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  lint-and-render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Pull official trmnlp image
+        run: docker pull trmnl/trmnlp:latest
+
+      - name: Lint recipe
+        run: docker run --rm -v "$PWD:/plugin" trmnl/trmnlp:latest lint
+
+      - name: Render TRMNL OG views
+        run: |
+          docker run --rm -v "$PWD:/plugin" trmnl/trmnlp:latest build --png --width 800 --height 480 --color-depth 1
+          mv _build _build-og
+
+      - name: Render TRMNL X views
+        run: |
+          docker run --rm -v "$PWD:/plugin" trmnl/trmnlp:latest build --png --width 1040 --height 780 --color-depth 4
+          mv _build _build-x
+
+      - name: Upload rendered views
+        uses: actions/upload-artifact@v4
+        with:
+          name: trmnl-previews
+          path: |
+            _build-og/*.png
+            _build-x/*.png
+          if-no-files-found: error
+          retention-days: 14
