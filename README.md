@@ -13,7 +13,9 @@ ePaper display.
 - refreshes that cache hourly through GitHub Actions
 - evaluates the cached record locally without additional network requests
 - shows an alive, dead, or unknown result with a confidence indicator
+- offers Dry, Grim, and Pitch Black tone settings
 - rotates darkly humorous status lines when no death record is found
+- presents the result as a mortality-department case file
 - supports full-screen, half-horizontal, half-vertical, and quadrant layouts
 
 The plugin is intentionally conservative: if public sources cannot be checked

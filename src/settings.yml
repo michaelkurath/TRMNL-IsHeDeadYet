@@ -52,6 +52,15 @@ custom_fields:
   - Kim Jong Un
   - Elon Musk
   - Rupert Murdoch
+- keyname: tone
+  field_type: select
+  name: Tone
+  description: Choose how dark the mortality desk should sound
+  default: grim
+  options:
+  - "Dry: dry"
+  - "Grim: grim"
+  - "Pitch Black: pitch_black"
 name: Is he dead yet?
 description: Public figure status checker
 refresh_interval: 60
