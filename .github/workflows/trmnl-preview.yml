@@ -26,18 +26,41 @@ jobs:
       - name: Lint recipe
         run: docker run --rm -v "$PWD:/plugin" trmnl/trmnlp:latest lint
 
-      - name: Render TRMNL OG views
+      - name: Start trmnlp preview server
         run: |
-          docker run --rm -v "$PWD:/plugin" trmnl/trmnlp:latest build --png --width 800 --height 480 --color-depth 1
-          mv _build _build-og
+          docker run --rm --detach --name trmnl-preview --publish 4567:4567 \
+            --volume "$PWD:/plugin" trmnl/trmnlp:latest serve --bind 0.0.0.0
+          for attempt in {1..30}; do
+            if curl --fail --silent http://127.0.0.1:4567/ >/dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          docker logs trmnl-preview
+          exit 1
 
-      - name: Render TRMNL X views
+      - name: Render real TRMNL OG and X views
         run: |
-          docker run --rm -v "$PWD:/plugin" trmnl/trmnlp:latest build --png --width 1040 --height 780 --color-depth 4
-          mv _build _build-x
+          mkdir -p _build-og _build-x
+          views=(full half_horizontal half_vertical quadrant)
+          og_classes='screen screen--og_png screen--md screen--density-1x screen--1bit'
+          x_classes='screen screen--v2 screen--lg screen--density-2x screen--4bit'
+          for view in "${views[@]}"; do
+            curl --fail --show-error --silent --get \
+              --data-urlencode "screen_classes=${og_classes}" \
+              --data 'width=800' --data 'height=480' --data 'color_depth=1' \
+              "http://127.0.0.1:4567/render/${view}.png" \
+              --output "_build-og/${view}.png"
+            curl --fail --show-error --silent --get \
+              --data-urlencode "screen_classes=${x_classes}" \
+              --data 'width=1040' --data 'height=780' --data 'color_depth=4' \
+              "http://127.0.0.1:4567/render/${view}.png" \
+              --output "_build-x/${view}.png"
+          done
 
-      - name: Make previews readable by artifact uploader
-        run: sudo chown -R "$USER:$USER" _build-og _build-x
+      - name: Stop trmnlp preview server
+        if: always()
+        run: docker stop trmnl-preview || true
 
       - name: Upload rendered views
         uses: actions/upload-artifact@v4
