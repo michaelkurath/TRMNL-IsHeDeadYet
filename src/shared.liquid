@@ -1,5 +1,5 @@
 {% assign selected_person_key = trmnl.plugin_settings.custom_fields_values.person | default: 'donald_trump' | downcase | replace: ' ', '_' %}
-{% assign selected_tone = trmnl.plugin_settings.custom_fields_values.tone | default: 'grim' %}
+{% assign selected_tone = trmnl.plugin_settings.custom_fields_values.tone | default: 'grim' | downcase | replace: ' ', '_' %}
 
 {% case selected_person_key %}
   {% when 'joe_biden' %}
@@ -22,30 +22,256 @@
 
 {% if selected_person %}
   {% assign subject = selected_person.subject %}
-  {% assign tone = selected_tone %}
   {% assign status = selected_person.status %}
   {% assign confidence = selected_person.confidence %}
   {% assign evidence_count = selected_person.evidence_count %}
   {% assign checked_at = selected_person.checked_at %}
-  {% assign headline = selected_person.headline %}
-  {% assign subheadline = selected_person.subheadline %}
-  {% assign footer = selected_person.footer %}
   {% assign evidence = selected_person.evidence %}
+
+  {% case selected_tone %}
+    {% when 'dry' %}
+      {% assign selected_message = selected_person.messages.dry %}
+    {% when 'pitch_black' %}
+      {% assign selected_message = selected_person.messages.pitch_black %}
+    {% else %}
+      {% assign selected_tone = 'grim' %}
+      {% assign selected_message = selected_person.messages.grim %}
+  {% endcase %}
+
+  {% assign headline = selected_message.headline | default: selected_person.headline %}
+  {% assign subheadline = selected_message.subheadline | default: selected_person.subheadline %}
+  {% assign footer = selected_message.footer | default: selected_person.footer %}
 {% endif %}
 
-{% if selected_tone == 'neutral' %}
-  {% case status %}
-    {% when 'dead' %}
-      {% assign headline = 'Confirmed deceased' %}
-      {% assign subheadline = 'A public date-of-death signal was found.' %}
-      {% assign footer = 'Status based on public Wikidata and Wikipedia signals.' %}
-    {% when 'alive' %}
-      {% assign headline = 'No death record found' %}
-      {% assign subheadline = 'Public sources currently indicate no confirmed death.' %}
-      {% assign footer = 'Status based on public Wikidata and Wikipedia signals.' %}
+{% case selected_tone %}
+  {% when 'dry' %}
+    {% assign department = 'PUBLIC RECORDS DESK' %}
+    {% assign tone_label = 'DRY' %}
+  {% when 'pitch_black' %}
+    {% assign department = 'DEPARTMENT OF FINAL DEPARTURES' %}
+    {% assign tone_label = 'PITCH BLACK' %}
+  {% else %}
+    {% assign department = 'MORTALITY DESK' %}
+    {% assign tone_label = 'GRIM' %}
+{% endcase %}
+
+{% case status %}
+  {% when 'dead' %}
+    {% assign case_state = 'CASE CLOSED' %}
+    {% assign status_label = 'FINAL STATUS · FILED' %}
+    {% assign obituary_state = 'FILED' %}
+    {% assign coffin_state = 'ASSIGNED' %}
+  {% when 'alive' %}
+    {% assign case_state = 'CASE OPEN' %}
+    {% if selected_tone == 'pitch_black' %}
+      {% assign status_label = 'REAPER STATUS · DELAYED' %}
+    {% elsif selected_tone == 'grim' %}
+      {% assign status_label = 'DEATH STATUS · PENDING' %}
     {% else %}
-      {% assign headline = 'Unable to confirm' %}
-      {% assign subheadline = 'The public status check did not return a reliable result.' %}
-      {% assign footer = 'Try again after the next refresh.' %}
-  {% endcase %}
-{% endif %}
+      {% assign status_label = 'PUBLIC STATUS · LIVING' %}
+    {% endif %}
+    {% assign obituary_state = 'PENDING' %}
+    {% assign coffin_state = 'UNASSIGNED' %}
+  {% else %}
+    {% assign case_state = 'CASE HELD' %}
+    {% assign status_label = 'MORTALITY · UNVERIFIED' %}
+    {% assign obituary_state = 'UNKNOWN' %}
+    {% assign coffin_state = 'ON HOLD' %}
+{% endcase %}
+
+{%- capture mortality_icon -%}
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M8 3h8l3 5v11l-7 3-7-3V8l3-5Z" stroke="black" stroke-width="1.8" stroke-linejoin="round"/>
+  <path d="M12 7v10M9 10h6" stroke="black" stroke-width="1.8" stroke-linecap="round"/>
+</svg>
+{%- endcapture -%}
+
+<style>
+  .mortality-card {
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    overflow: hidden;
+    border: 3px solid #000;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    background: #fff;
+    box-shadow: inset 0 0 0 1px #000;
+  }
+
+  .mortality-card__header {
+    min-height: 38px;
+    padding: 7px 12px;
+    border-bottom: 3px solid #000;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: .08em;
+    line-height: 1.1;
+  }
+
+  .mortality-card--pitch_black .mortality-card__header,
+  .mortality-card--dead .mortality-card__header {
+    color: #fff;
+    background: #000;
+  }
+
+  .mortality-card__department {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .mortality-card__body {
+    min-height: 0;
+    padding: 18px 20px 14px;
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    justify-content: center;
+    gap: 12px;
+  }
+
+  .mortality-card__stamp {
+    align-self: flex-start;
+    padding: 5px 10px 4px;
+    border: 3px double #000;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: .08em;
+    line-height: 1;
+    transform: rotate(-1deg);
+  }
+
+  .mortality-card__headline {
+    min-height: 0;
+    font-weight: 700;
+    letter-spacing: -.035em;
+    line-height: .94;
+  }
+
+  .mortality-card__subheadline {
+    max-width: 92%;
+    font-weight: 600;
+    line-height: 1.1;
+  }
+
+  .mortality-card__evidence {
+    padding-top: 9px;
+    border-top: 2px solid #000;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.15;
+  }
+
+  .mortality-card__meta {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    border-top: 3px solid #000;
+  }
+
+  .mortality-card__meta-item {
+    min-width: 0;
+    padding: 8px 12px;
+  }
+
+  .mortality-card__meta-item + .mortality-card__meta-item {
+    border-left: 2px solid #000;
+  }
+
+  .mortality-card__meta-label {
+    display: block;
+    margin-bottom: 2px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .08em;
+    line-height: 1;
+  }
+
+  .mortality-card__meta-value {
+    display: block;
+    overflow: hidden;
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1.1;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .mortality-card--half_horizontal .mortality-card__header,
+  .mortality-card--quadrant .mortality-card__header {
+    min-height: 29px;
+    padding: 5px 9px;
+    font-size: 9px;
+  }
+
+  .mortality-card--half_horizontal .mortality-card__body {
+    padding: 9px 12px 8px;
+    gap: 6px;
+  }
+
+  .mortality-card--half_horizontal .mortality-card__stamp {
+    padding: 3px 7px;
+    border-width: 2px;
+    font-size: 9px;
+  }
+
+  .mortality-card--half_horizontal .mortality-card__evidence {
+    padding-top: 5px;
+    font-size: 10px;
+  }
+
+  .mortality-card--half_horizontal .mortality-card__meta-item {
+    padding: 5px 8px;
+  }
+
+  .mortality-card--half_vertical .mortality-card__header {
+    font-size: 10px;
+  }
+
+  .mortality-card--half_vertical .mortality-card__body {
+    padding: 14px 14px 10px;
+    gap: 9px;
+  }
+
+  .mortality-card--half_vertical .mortality-card__subheadline {
+    max-width: 100%;
+  }
+
+  .mortality-card--half_vertical .mortality-card__meta {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .mortality-card--half_vertical .mortality-card__meta-item:last-child {
+    display: none;
+  }
+
+  .mortality-card--quadrant {
+    border-width: 2px;
+    border-radius: 8px;
+  }
+
+  .mortality-card--quadrant .mortality-card__body {
+    padding: 9px 10px 8px;
+    gap: 6px;
+  }
+
+  .mortality-card--quadrant .mortality-card__stamp {
+    padding: 3px 6px;
+    border-width: 2px;
+    font-size: 8px;
+  }
+
+  .mortality-card--quadrant .mortality-card__subheadline {
+    max-width: 100%;
+  }
+
+  .mortality-card--quadrant .mortality-card__evidence,
+  .mortality-card--quadrant .mortality-card__meta {
+    display: none;
+  }
+</style>
