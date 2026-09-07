@@ -35,8 +35,7 @@ custom_fields:
   field_type: author_bio
   name: About This Plugin
   description: Checks public Wikidata death-status records for selected public figures, with dark humor. Source code and documentation are available on <a href="https://github.com/michaelkurath/TRMNL-IsHeDeadYet" target="_blank" rel="noopener">GitHub</a>.
-  email_address: michael.kurath@gmail.com
-  learn_more_url: https://github.com/michaelkurath/TRMNL-IsHeDeadYet
+  github_url: https://github.com/michaelkurath/TRMNL-IsHeDeadYet
   category: news,morbid
 - keyname: person
   field_type: select
