@@ -3,7 +3,7 @@ watch:
   - .trmnlp.yml
   - src
 custom_fields:
-  person: donald_trump
+  person: mitch_mcconnell
   tone: pitch_black
 transform_runtime: enabled
 variables:

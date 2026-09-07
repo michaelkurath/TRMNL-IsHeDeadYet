@@ -28,7 +28,7 @@ jobs:
         shell: bash
         env:
           WIKIDATA_URL: >-
-            https://www.wikidata.org/w/api.php?action=wbgetentities&ids=Q22686%7CQ6279%7CQ76%7CQ7747%7CQ15031%7CQ42313%7CQ317521%7CQ53950&props=claims&format=json&maxage=3600&smaxage=3600
+            https://www.wikidata.org/w/api.php?action=wbgetentities&ids=Q22686%7CQ6279%7CQ76%7CQ7747%7CQ15031%7CQ42313%7CQ317521%7CQ53950%7CQ355522&props=claims&format=json&maxage=3600&smaxage=3600
         run: |
           set -euo pipefail
 
